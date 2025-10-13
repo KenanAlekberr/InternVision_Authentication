@@ -1,8 +1,6 @@
-package com.example.authsystem.dto.request.auth;
+package com.example.authsystem.dto.request;
 
-import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,18 +13,14 @@ import static lombok.AccessLevel.PRIVATE;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = PRIVATE)
-public class ChangePasswordRequest {
-    @NotNull(message = "Password cannot be null")
-    @NotBlank(message = "Password cannot be blank")
-    @Size(min = 6, max = 30, message = "Password must be between 6 and 30 characters")
-    String oldPassword;
+public class ResetPasswordRequest {
+    @NotBlank(message = "Token cannot be blank")
+    String token;
 
-    @NotNull(message = "Password cannot be null")
     @NotBlank(message = "Password cannot be blank")
     @Size(min = 6, max = 30, message = "Password must be between 6 and 30 characters")
     String newPassword;
 
-    @NotNull(message = "Password cannot be null")
     @NotBlank(message = "Password cannot be blank")
     @Size(min = 6, max = 30, message = "Password must be between 6 and 30 characters")
     String confirmPassword;

@@ -7,10 +7,10 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Getter
 @FieldDefaults(level = PRIVATE, makeFinal = true)
-public class CustomNotFoundException extends RuntimeException {
+public class NotFoundException extends RuntimeException {
     String code;
 
-    public CustomNotFoundException(String code, String message) {
+    public NotFoundException(String code, String message) {
         super(message);
         this.code = code;
     }

@@ -3,15 +3,35 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://postgres:5432/${DB_NAME}
+    url: jdbc:postgresql://localhost:5432/${DB_NAME}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
+
   liquibase:
     change-log: classpath:liquibase/changelog-master.yml
+
   jpa:
     show-sql: true
 
-redis:
-  server:
-    url: redis://redis:6379
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  security:
+    user:
+      name: admin
+      password: admin123
+#      roles: USER
+
+jwt:
+  secret: verysecretkey_change_this_to_env_or_vault
+  expiration-ms: 3600000

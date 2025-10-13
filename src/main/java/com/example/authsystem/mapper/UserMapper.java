@@ -1,12 +1,10 @@
 package com.example.authsystem.mapper;
 
-import com.example.authsystem.dto.request.user.UpdateUserRequest;
-import com.example.authsystem.dto.request.user.UserRegisterRequest;
+import com.example.authsystem.dto.request.UpdateUserRequest;
+import com.example.authsystem.dto.request.UserRegisterRequest;
 import com.example.authsystem.dto.response.UserResponse;
 import com.example.authsystem.entity.UserEntity;
 import io.micrometer.common.util.StringUtils;
-
-import java.time.LocalDateTime;
 
 import static com.example.authsystem.enums.UserRole.USER;
 import static com.example.authsystem.enums.UserStatus.ACTIVE;
@@ -35,8 +33,6 @@ public enum UserMapper {
                 .email(user.getEmail())
                 .userStatus(user.getUserStatus())
                 .userRole(user.getUserRole())
-                .createdAt(user.getCreatedAt())
-                .updatedAt(user.getUpdatedAt())
                 .build();
     }
 
@@ -51,6 +47,5 @@ public enum UserMapper {
             user.setEmail(request.getEmail());
 
         user.setUserStatus(IN_PROGRESS);
-        user.setUpdatedAt(LocalDateTime.now());
     }
 }

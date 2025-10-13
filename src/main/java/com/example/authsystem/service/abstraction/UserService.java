@@ -1,6 +1,6 @@
 package com.example.authsystem.service.abstraction;
 
-import com.example.authsystem.dto.request.user.UpdateUserRequest;
+import com.example.authsystem.dto.request.UpdateUserRequest;
 import com.example.authsystem.dto.response.UserResponse;
 
 import java.util.List;

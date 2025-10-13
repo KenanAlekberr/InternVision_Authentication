@@ -1,9 +1,9 @@
 package com.example.authsystem.service.impl;
 
-import com.example.authsystem.dto.request.user.UpdateUserRequest;
+import com.example.authsystem.dto.request.UpdateUserRequest;
 import com.example.authsystem.dto.response.UserResponse;
 import com.example.authsystem.entity.UserEntity;
-import com.example.authsystem.exception.custom.CustomNotFoundException;
+import com.example.authsystem.exception.custom.NotFoundException;
 import com.example.authsystem.repository.UserRepository;
 import com.example.authsystem.service.abstraction.UserService;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +35,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUserById(Long id) {
         UserEntity userEntity = fetchUserIfExist(id);
+
         return USER_MAPPER.buildUserResponse(userEntity);
     }
 
@@ -58,6 +59,6 @@ public class UserServiceImpl implements UserService {
 
     private UserEntity fetchUserIfExist(Long id) {
         return userRepository.findById(id).orElseThrow
-                (() -> new CustomNotFoundException(USER_NOT_FOUND.getCode(), USER_NOT_FOUND.getMessage()));
+                (() -> new NotFoundException(USER_NOT_FOUND.getCode(), USER_NOT_FOUND.getMessage()));
     }
 }

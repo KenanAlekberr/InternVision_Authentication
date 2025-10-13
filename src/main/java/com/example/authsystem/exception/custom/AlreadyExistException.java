@@ -7,10 +7,10 @@ import static lombok.AccessLevel.PRIVATE;
 
 @Getter
 @FieldDefaults(level = PRIVATE, makeFinal = true)
-public class CustomAlreadyExistException extends RuntimeException {
+public class AlreadyExistException extends RuntimeException {
     String code;
 
-    public CustomAlreadyExistException(String code, String message) {
+    public AlreadyExistException(String code, String message) {
         super(message);
         this.code = code;
     }

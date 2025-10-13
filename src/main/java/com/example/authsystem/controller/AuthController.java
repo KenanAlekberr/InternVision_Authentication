@@ -1,8 +1,11 @@
 package com.example.authsystem.controller;
 
-import com.example.authsystem.dto.request.auth.ChangePasswordRequest;
-import com.example.authsystem.dto.request.auth.LoginRequest;
-import com.example.authsystem.dto.request.user.UserRegisterRequest;
+import com.example.authsystem.dto.request.ChangePasswordRequest;
+import com.example.authsystem.dto.request.ForgotPasswordRequest;
+import com.example.authsystem.dto.request.LoginRequest;
+import com.example.authsystem.dto.request.ResetPasswordRequest;
+import com.example.authsystem.dto.request.UserRegisterRequest;
+import com.example.authsystem.dto.response.AuthResponse;
 import com.example.authsystem.dto.response.UserResponse;
 import com.example.authsystem.service.abstraction.AuthService;
 import jakarta.validation.Valid;
@@ -11,6 +14,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,7 +38,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @ResponseStatus(OK)
-    public UserResponse login(@Valid @RequestBody LoginRequest request) {
+    public AuthResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request);
     }
 
@@ -42,5 +46,23 @@ public class AuthController {
     @ResponseStatus(OK)
     public void changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequest request) {
         authService.changePassword(id, request);
+    }
+
+    @PostMapping("/forgot-password")
+    @ResponseStatus(OK)
+    public void forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        authService.forgotPassword(request.getEmail());
+    }
+
+    @PostMapping("/reset-password")
+    @ResponseStatus(OK)
+    public void resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request);
+    }
+
+    @PostMapping("/logout")
+    @ResponseStatus(OK)
+    public void logout(@RequestHeader("Authorization") String authHeader) {
+        authService.logout(authHeader);
     }
 }

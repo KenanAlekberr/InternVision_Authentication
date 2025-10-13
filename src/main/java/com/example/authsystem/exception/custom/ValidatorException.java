@@ -1,13 +1,10 @@
-package com.example.authsystem.exception;
+package com.example.authsystem.exception.custom;
 
-import com.example.authsystem.exception.custom.ValidatorException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -16,8 +13,7 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor
 @FieldDefaults(level = PRIVATE)
 @Builder
-public class ErrorResponse {
-    String code;
+public class ValidatorException {
+    String field;
     String message;
-    List<ValidatorException> validationExceptions;
 }
