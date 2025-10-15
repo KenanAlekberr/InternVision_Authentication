@@ -6,7 +6,6 @@ import com.example.authsystem.repository.UserRepository;
 import com.example.authsystem.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws NotFoundException {
+    public CustomUserDetails loadUserByUsername(String email) throws NotFoundException {
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND.getCode(), USER_NOT_FOUND.getMessage()));
 

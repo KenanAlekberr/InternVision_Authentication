@@ -1,6 +1,6 @@
 package com.example.authsystem.config.security;
 
-import com.example.authsystem.security.JwtAuthFilter;
+import com.example.authsystem.security.filter.JwtAuthFilter;
 import com.example.authsystem.service.impl.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,7 +25,6 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
-
     CustomUserDetailsService userDetailsService;
     JwtAuthFilter authFilter;
 

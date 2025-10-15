@@ -26,8 +26,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserResponse> getAllUsers() {
-        return userRepository.findAll()
-                .stream()
+        return userRepository.findAll().stream()
+                .filter(user -> user.getUserStatus() != DELETED)
                 .map(USER_MAPPER::buildUserResponse)
                 .collect(Collectors.toList());
     }

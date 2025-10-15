@@ -1,6 +1,7 @@
 package com.example.authsystem.exception;
 
 import com.example.authsystem.exception.custom.AlreadyExistException;
+import com.example.authsystem.exception.custom.AuthenticationServiceException;
 import com.example.authsystem.exception.custom.ConfirmPasswordException;
 import com.example.authsystem.exception.custom.IncorrectOldPasswordException;
 import com.example.authsystem.exception.custom.InvalidCredentialsException;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.List;
 
 import static com.example.authsystem.exception.ExceptionConstants.ALREADY_EXCEPTION;
+import static com.example.authsystem.exception.ExceptionConstants.AUTHENTICATION_SERVICE_EXCEPTION;
 import static com.example.authsystem.exception.ExceptionConstants.CONFIRM_PASSWORD;
 import static com.example.authsystem.exception.ExceptionConstants.HTTP_METHOD_IS_NOT_CORRECT;
 import static com.example.authsystem.exception.ExceptionConstants.INCORRECT_OLD_PASSWORD;
@@ -136,6 +138,16 @@ public class ErrorHandler {
         return ErrorResponse.builder()
                 .code(INVALID_STATE_EXCEPTION.getCode())
                 .message(INVALID_STATE_EXCEPTION.getMessage())
+                .build();
+    }
+
+    @ExceptionHandler(AuthenticationServiceException.class)
+    @ResponseStatus(BAD_REQUEST)
+    public ErrorResponse handle(AuthenticationServiceException exception) {
+        log.error("AuthenticationServiceException, ", exception);
+        return ErrorResponse.builder()
+                .code(AUTHENTICATION_SERVICE_EXCEPTION.getCode())
+                .message(AUTHENTICATION_SERVICE_EXCEPTION.getMessage())
                 .build();
     }
 

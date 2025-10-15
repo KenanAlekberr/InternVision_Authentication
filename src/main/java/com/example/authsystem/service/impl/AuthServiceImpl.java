@@ -1,5 +1,6 @@
 package com.example.authsystem.service.impl;
 
+import com.example.authsystem.constant.AppConstants;
 import com.example.authsystem.dto.request.ChangePasswordRequest;
 import com.example.authsystem.dto.request.LoginRequest;
 import com.example.authsystem.dto.request.ResetPasswordRequest;
@@ -9,6 +10,7 @@ import com.example.authsystem.dto.response.AuthResponse;
 import com.example.authsystem.dto.response.UserResponse;
 import com.example.authsystem.entity.UserEntity;
 import com.example.authsystem.exception.custom.AlreadyExistException;
+import com.example.authsystem.exception.custom.AuthenticationServiceException;
 import com.example.authsystem.exception.custom.ConfirmPasswordException;
 import com.example.authsystem.exception.custom.InvalidCredentialsException;
 import com.example.authsystem.exception.custom.InvalidOtpException;
@@ -24,7 +26,9 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,7 +39,12 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import static com.example.authsystem.constant.AppConstants.ACCESS_BLACKLIST_PREFIX;
+import static com.example.authsystem.constant.AppConstants.OTP_KEY_PREFIX;
+import static com.example.authsystem.constant.AppConstants.REFRESH_KEY_PREFIX;
+import static com.example.authsystem.constant.AppConstants.USER_KEY_PREFIX;
 import static com.example.authsystem.exception.ExceptionConstants.ALREADY_EXCEPTION;
+import static com.example.authsystem.exception.ExceptionConstants.AUTHENTICATION_SERVICE_EXCEPTION;
 import static com.example.authsystem.exception.ExceptionConstants.CONFIRM_PASSWORD;
 import static com.example.authsystem.exception.ExceptionConstants.INVALID_CREDENTIALS;
 import static com.example.authsystem.exception.ExceptionConstants.INVALID_OTP_EXCEPTION;
@@ -57,12 +66,6 @@ public class AuthServiceImpl implements AuthService {
     JWTUtil jwtUtil;
     EmailService emailService;
     CacheUtilWithRedisson cache;
-
-    static String USER_KEY_PREFIX = "pending:user:";
-    static String OTP_KEY_PREFIX = "OTP:";
-
-    static String REFRESH_KEY_PREFIX = "auth:refresh:";
-    static String ACCESS_BLACKLIST_PREFIX = "auth:black:access:";
 
     @Override
     public String register(UserRegisterRequest request) {
@@ -87,6 +90,10 @@ public class AuthServiceImpl implements AuthService {
     public UserResponse verifyOtp(VerifyOtpRequest request) {
         String email = request.getEmail();
         String storedOtp = cache.get(OTP_KEY_PREFIX + email, String.class);
+
+        userRepository.findByEmail(request.getEmail()).ifPresent(user -> {
+            throw new AlreadyExistException(ALREADY_EXCEPTION.getCode(), ALREADY_EXCEPTION.getMessage());
+        });
 
         if (storedOtp == null || !storedOtp.equals(request.getOtp()))
             throw new InvalidOtpException(INVALID_CREDENTIALS.getCode(), INVALID_CREDENTIALS.getMessage());
@@ -113,27 +120,38 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse login(LoginRequest request) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        Map<String, Object> claims = Map.of("userId", userDetails.getId(), "roles", userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
+            Map<String, Object> claims = Map.of("userId", userDetails.getId(),
+                    "roles", userDetails.getAuthorities().stream()
+                            .map(GrantedAuthority::getAuthority)
+                            .collect(Collectors.toList()));
 
-        String accessToken = jwtUtil.generateAccessToken(userDetails.getUsername(), claims);
-        String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUsername());
+            String accessToken = jwtUtil.generateAccessToken(userDetails.getUsername(), claims);
+            String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUsername());
 
-        cache.set(REFRESH_KEY_PREFIX + userDetails.getUsername(), refreshToken, 6, MINUTES);
+            cache.set(REFRESH_KEY_PREFIX + userDetails.getUsername(),
+                    refreshToken, 6, MINUTES);
 
-        return AuthResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .user(USER_MAPPER.buildUserResponse(userDetails.user()))
-                .build();
+            return AuthResponse.builder()
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .user(USER_MAPPER.buildUserResponse(userDetails.user()))
+                    .build();
+        } catch (InternalAuthenticationServiceException e) {
+            throw new AuthenticationServiceException(AUTHENTICATION_SERVICE_EXCEPTION.getCode(),
+                    AUTHENTICATION_SERVICE_EXCEPTION.getMessage());
+        }
     }
 
     @Override
     public void changePassword(Long id, ChangePasswordRequest request) {
-        UserEntity user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));//NotFoundException
+        UserEntity user = userRepository.findById(id).orElseThrow(
+                () -> new NotFoundException(USER_NOT_FOUND.getCode(), USER_NOT_FOUND.getMessage()));
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword()))
             throw new InvalidCredentialsException(INVALID_CREDENTIALS.getCode(), INVALID_CREDENTIALS.getMessage());
@@ -167,13 +185,17 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void forgotPassword(String email) {
-        userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User with given email not found"));
+        try {
+            userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User with given email not found"));
 
-        String otp = String.format("%06d", new Random().nextInt(999999));
+            String otp = String.format("%06d", new Random().nextInt(999999));
 
-        cache.set(OTP_KEY_PREFIX + email, otp, 10, MINUTES);
+            cache.set(OTP_KEY_PREFIX + email, otp, 10, MINUTES);
 
-        emailService.sendEmail(email, "Your OTP Code", otp);
+            emailService.sendEmail(email, "Your OTP Code", otp);
+        } catch (RuntimeException e) {
+            throw new NotFoundException(USER_NOT_FOUND.getCode(), "User not found or invalid credentials");
+        }
     }
 
     @Override

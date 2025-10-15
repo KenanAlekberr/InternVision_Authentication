@@ -13,7 +13,6 @@ import static com.example.authsystem.enums.UserStatus.DELETED;
 
 
 public record CustomUserDetails(UserEntity user) implements UserDetails {
-
     public Long getId() {
         return user.getId();
     }

@@ -3,17 +3,21 @@ package com.example.authsystem.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.experimental.FieldDefaults;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
+import static lombok.AccessLevel.PRIVATE;
+
 @Component
+@FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public final class CacheUtilWithRedisson {
-    private final RedissonClient redissonClient;
-    private final ObjectMapper mapper;
+    RedissonClient redissonClient;
+    ObjectMapper mapper;
 
     public boolean exists(String key) {
         try {

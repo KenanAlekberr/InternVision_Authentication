@@ -20,6 +20,7 @@ public enum ExceptionConstants {
     TOKEN_EXCEPTION("TOKEN_EXCEPTION", "Reset token invalid or expired"),
     INVALID_OTP_EXCEPTION("INVALID_OTP_EXCEPTION", "Invalid or expired OTP code"),
     INVALID_STATE_EXCEPTION("INVALID_STATE_EXCEPTION", "No pending registration found or expired"),
+    AUTHENTICATION_SERVICE_EXCEPTION("AUTHENTICATION_SERVICE_EXCEPTION", "No such account exists. Please register."),
     VALIDATION_EXCEPTION("VALIDATION_EXCEPTION", "Validation exception");
 
     String code;

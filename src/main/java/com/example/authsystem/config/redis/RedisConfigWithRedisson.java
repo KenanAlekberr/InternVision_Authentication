@@ -20,7 +20,6 @@ public class RedisConfigWithRedisson {
         return Redisson.create(config);
     }
 
-
     @Bean
     public ObjectMapper objectMapper() {
         ObjectMapper mapper = new ObjectMapper();

@@ -1,4 +1,4 @@
-package com.example.authsystem.security;
+package com.example.authsystem.security.filter;
 
 
 import com.example.authsystem.util.CacheUtilWithRedisson;
@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.authsystem.constant.AppConstants.ACCESS_BLACKLIST_PREFIX;
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -34,7 +35,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     JWTUtil jwtUtil;
     UserDetailsService userDetailsService;
     CacheUtilWithRedisson cache;
-    static String ACCESS_BLACKLIST_PREFIX = "auth:black:access:";
 
     private boolean isSwaggerOrPublic(String uri) {
         return uri.startsWith("/v3/api-docs")
@@ -70,6 +70,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 response.sendError(SC_UNAUTHORIZED, "Token is blacklisted");
                 return;
             }
+
             if (!jwtUtil.validate(token)) {
                 filterChain.doFilter(request, response);
                 return;
