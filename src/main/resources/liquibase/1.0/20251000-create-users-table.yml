@@ -31,12 +31,12 @@ databaseChangeLog:
                     unique: true
               - column:
                   name: password
-                  type: VARCHAR(30)
+                  type: VARCHAR(150)
                   constraints:
                     nullable: false
               - column:
                   name: confirm_password
-                  type: VARCHAR(30)
+                  type: VARCHAR(150)
                   constraints:
                     nullable: false
               - column:

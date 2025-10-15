@@ -33,10 +33,10 @@ public class UserRegisterRequest {
     String email;
 
     @NotBlank(message = "Password cannot be blank")
-    @Size(min = 6, max = 30, message = "Password must be between 6 and 30 characters")
+    @Size(min = 6, max = 150, message = "Password must be between 6 and 150 characters")
     String password;
 
     @NotBlank(message = "Password cannot be blank")
-    @Size(min = 6, max = 30, message = "Password must be between 6 and 30 characters")
+    @Size(min = 6, max = 150, message = "Password must be between 6 and 150 characters")
     String confirmPassword;
 }

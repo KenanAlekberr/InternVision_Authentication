@@ -28,10 +28,10 @@ spring:
 
   security:
     user:
-      name: admin
-      password: admin123
-#      roles: USER
+      name: ${SECURITY_USERNAME}
+      password: ${SECURITY_PASSWORD}
 
 jwt:
-  secret: verysecretkey_change_this_to_env_or_vault
-  expiration-ms: 3600000
+  secret: ${SECRET_KEY}
+  access-token-ms: 180000
+  refresh-token-ms: 360000

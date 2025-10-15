@@ -3,6 +3,7 @@ package com.example.authsystem.controller;
 import com.example.authsystem.dto.request.UpdateUserRequest;
 import com.example.authsystem.dto.response.UserResponse;
 import com.example.authsystem.service.abstraction.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,6 +26,7 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/api/v1/user")
 @FieldDefaults(level = PRIVATE, makeFinal = true)
 @RequiredArgsConstructor(access = PRIVATE)
+@SecurityRequirement(name = "bearerAuth")
 public class UserController {
     UserService userService;
 

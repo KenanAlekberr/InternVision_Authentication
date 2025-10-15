@@ -4,6 +4,8 @@ import com.example.authsystem.exception.custom.AlreadyExistException;
 import com.example.authsystem.exception.custom.ConfirmPasswordException;
 import com.example.authsystem.exception.custom.IncorrectOldPasswordException;
 import com.example.authsystem.exception.custom.InvalidCredentialsException;
+import com.example.authsystem.exception.custom.InvalidOtpException;
+import com.example.authsystem.exception.custom.InvalidStateException;
 import com.example.authsystem.exception.custom.NotFoundException;
 import com.example.authsystem.exception.custom.TokenException;
 import com.example.authsystem.exception.custom.ValidatorException;
@@ -21,6 +23,8 @@ import static com.example.authsystem.exception.ExceptionConstants.CONFIRM_PASSWO
 import static com.example.authsystem.exception.ExceptionConstants.HTTP_METHOD_IS_NOT_CORRECT;
 import static com.example.authsystem.exception.ExceptionConstants.INCORRECT_OLD_PASSWORD;
 import static com.example.authsystem.exception.ExceptionConstants.INVALID_CREDENTIALS;
+import static com.example.authsystem.exception.ExceptionConstants.INVALID_OTP_EXCEPTION;
+import static com.example.authsystem.exception.ExceptionConstants.INVALID_STATE_EXCEPTION;
 import static com.example.authsystem.exception.ExceptionConstants.TOKEN_EXCEPTION;
 import static com.example.authsystem.exception.ExceptionConstants.UNEXPECTED_EXCEPTION;
 import static com.example.authsystem.exception.ExceptionConstants.VALIDATION_EXCEPTION;
@@ -112,6 +116,26 @@ public class ErrorHandler {
         return ErrorResponse.builder()
                 .code(TOKEN_EXCEPTION.getCode())
                 .message(TOKEN_EXCEPTION.getMessage())
+                .build();
+    }
+
+    @ExceptionHandler(InvalidOtpException.class)
+    @ResponseStatus(BAD_REQUEST)
+    public ErrorResponse handle(InvalidOtpException exception) {
+        log.error("InvalidOtpException, ", exception);
+        return ErrorResponse.builder()
+                .code(INVALID_OTP_EXCEPTION.getCode())
+                .message(INVALID_OTP_EXCEPTION.getMessage())
+                .build();
+    }
+
+    @ExceptionHandler(InvalidStateException.class)
+    @ResponseStatus(BAD_REQUEST)
+    public ErrorResponse handle(InvalidStateException exception) {
+        log.error("InvalidStateException, ", exception);
+        return ErrorResponse.builder()
+                .code(INVALID_STATE_EXCEPTION.getCode())
+                .message(INVALID_STATE_EXCEPTION.getMessage())
                 .build();
     }
 

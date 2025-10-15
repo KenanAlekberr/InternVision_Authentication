@@ -5,6 +5,7 @@ import com.example.authsystem.dto.request.ForgotPasswordRequest;
 import com.example.authsystem.dto.request.LoginRequest;
 import com.example.authsystem.dto.request.ResetPasswordRequest;
 import com.example.authsystem.dto.request.UserRegisterRequest;
+import com.example.authsystem.dto.request.VerifyOtpRequest;
 import com.example.authsystem.dto.response.AuthResponse;
 import com.example.authsystem.dto.response.UserResponse;
 import com.example.authsystem.service.abstraction.AuthService;
@@ -32,8 +33,14 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(CREATED)
-    public UserResponse register(@Valid @RequestBody UserRegisterRequest request) {
+    public String register(@Valid @RequestBody UserRegisterRequest request) {
         return authService.register(request);
+    }
+
+    @PostMapping("/verify")
+    @ResponseStatus(OK)
+    public UserResponse register(@Valid @RequestBody VerifyOtpRequest request) {
+        return authService.verifyOtp(request);
     }
 
     @PostMapping("/login")

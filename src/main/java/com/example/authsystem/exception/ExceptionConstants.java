@@ -18,6 +18,8 @@ public enum ExceptionConstants {
     INCORRECT_OLD_PASSWORD("INCORRECT_OLD_PASSWORD", "Old password is incorrect"),
     CONFIRM_PASSWORD("CONFIRM_PASSWORD", "Password and confirm password must match"),
     TOKEN_EXCEPTION("TOKEN_EXCEPTION", "Reset token invalid or expired"),
+    INVALID_OTP_EXCEPTION("INVALID_OTP_EXCEPTION", "Invalid or expired OTP code"),
+    INVALID_STATE_EXCEPTION("INVALID_STATE_EXCEPTION", "No pending registration found or expired"),
     VALIDATION_EXCEPTION("VALIDATION_EXCEPTION", "Validation exception");
 
     String code;

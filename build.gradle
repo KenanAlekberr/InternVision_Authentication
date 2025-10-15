@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.3.3'
+	id 'org.springframework.boot' version '3.5.6'
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -38,22 +38,28 @@ dependencies {
 	implementation 'org.liquibase:liquibase-core'
 
 	// Swagger
-	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2"
+	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0"
 
 	// Spring Security
-	implementation "com.nimbusds:nimbus-jose-jwt:9.37.2"
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	// Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// Redisson
+	implementation 'org.redisson:redisson:3.52.0'
 
 	// For password encryption
 	implementation 'org.springframework.security:spring-security-crypto'
 
-	// For Base64 encoding or password/token encoders
+	// For Base64 encoding or password / token encoders
 	implementation 'commons-codec:commons-codec:1.16.0'
 
 	// Mail
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
 	// JWT
+	implementation 'com.nimbusds:nimbus-jose-jwt:9.21'
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
@@ -66,6 +72,7 @@ dependencies {
 	runtimeOnly 'org.postgresql:postgresql'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
