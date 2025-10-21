@@ -30,7 +30,6 @@ import static com.example.authsystem.exception.ExceptionConstants.INVALID_STATE_
 import static com.example.authsystem.exception.ExceptionConstants.TOKEN_EXCEPTION;
 import static com.example.authsystem.exception.ExceptionConstants.UNEXPECTED_EXCEPTION;
 import static com.example.authsystem.exception.ExceptionConstants.VALIDATION_EXCEPTION;
-import static org.springframework.http.HttpStatus.ALREADY_REPORTED;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -72,7 +71,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler(AlreadyExistException.class)
-    @ResponseStatus(ALREADY_REPORTED)
+    @ResponseStatus(CONFLICT)
     public ErrorResponse handle(AlreadyExistException exception) {
         log.error("AlreadyExistException, ", exception);
         return ErrorResponse.builder()

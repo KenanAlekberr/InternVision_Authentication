@@ -28,13 +28,6 @@ public final class CacheUtilWithRedisson {
     }
 
     @SneakyThrows
-    public <T> void set(String key, T data) {
-        RBucket<Object> bucket = redissonClient.getBucket(key);
-        String serialized = mapper.writeValueAsString(data);
-        bucket.set(serialized);
-    }
-
-    @SneakyThrows
     public <T> void set(String key, T data, int timeToLive, TimeUnit timeUnit) {
         RBucket<Object> bucket = redissonClient.getBucket(key);
         String serialized = mapper.writeValueAsString(data);

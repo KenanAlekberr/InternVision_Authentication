@@ -1,6 +1,5 @@
 package com.example.authsystem.service.impl;
 
-import com.example.authsystem.constant.AppConstants;
 import com.example.authsystem.dto.request.ChangePasswordRequest;
 import com.example.authsystem.dto.request.LoginRequest;
 import com.example.authsystem.dto.request.ResetPasswordRequest;
@@ -26,8 +25,8 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -69,21 +68,26 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String register(UserRegisterRequest request) {
-        userRepository.findByEmail(request.getEmail()).ifPresent(user -> {
+        try {
+            userRepository.findByEmail(request.getEmail()).ifPresent(user -> {
+                throw new AlreadyExistException(ALREADY_EXCEPTION.getCode(), ALREADY_EXCEPTION.getMessage());
+            });
+
+            if (!request.getPassword().equals(request.getConfirmPassword()))
+                throw new ConfirmPasswordException(CONFIRM_PASSWORD.getCode(), CONFIRM_PASSWORD.getMessage());
+
+            String otp = String.valueOf(new Random().nextInt(900000) + 100000);
+
+            cache.set(USER_KEY_PREFIX + request.getEmail(), request, 5, MINUTES);
+            cache.set(OTP_KEY_PREFIX + request.getEmail(), otp, 5, MINUTES);
+
+            emailService.sendEmail(request.getEmail(), "Your OTP Code", otp);
+
+            return "OTP has been sent to your email";
+        } catch (AlreadyExistException e) {
             throw new AlreadyExistException(ALREADY_EXCEPTION.getCode(), ALREADY_EXCEPTION.getMessage());
-        });
+        }
 
-        if (!request.getPassword().equals(request.getConfirmPassword()))
-            throw new ConfirmPasswordException(CONFIRM_PASSWORD.getCode(), CONFIRM_PASSWORD.getMessage());
-
-        String otp = String.valueOf(new Random().nextInt(900000) + 100000);
-
-        cache.set(USER_KEY_PREFIX + request.getEmail(), request, 5, MINUTES);
-        cache.set(OTP_KEY_PREFIX + request.getEmail(), otp, 5, MINUTES);
-
-        emailService.sendEmail(request.getEmail(), "Your OTP Code", otp);
-
-        return "OTP has been sent to your email";
     }
 
     @Override
@@ -142,6 +146,9 @@ public class AuthServiceImpl implements AuthService {
                     .refreshToken(refreshToken)
                     .user(USER_MAPPER.buildUserResponse(userDetails.user()))
                     .build();
+        } catch (BadCredentialsException e) {
+            throw new InvalidCredentialsException(INVALID_CREDENTIALS.getCode(),
+                    INVALID_CREDENTIALS.getMessage());
         } catch (InternalAuthenticationServiceException e) {
             throw new AuthenticationServiceException(AUTHENTICATION_SERVICE_EXCEPTION.getCode(),
                     AUTHENTICATION_SERVICE_EXCEPTION.getMessage());
@@ -186,7 +193,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void forgotPassword(String email) {
         try {
-            userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User with given email not found"));
+            userRepository.findByEmail(email).orElseThrow(
+                    () -> new NotFoundException(USER_NOT_FOUND.getCode(), USER_NOT_FOUND.getMessage()));
 
             String otp = String.format("%06d", new Random().nextInt(999999));
 

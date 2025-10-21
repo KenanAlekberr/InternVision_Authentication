@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
-import static com.example.authsystem.enums.UserStatus.ACTIVE;
 import static com.example.authsystem.enums.UserStatus.DELETED;
 
 
@@ -46,6 +45,6 @@ public record CustomUserDetails(UserEntity user) implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return user.getUserStatus() != null && user.getUserStatus().equals(ACTIVE);
+        return user.getUserStatus() != null && !user.getUserStatus().equals(DELETED);
     }
 }
