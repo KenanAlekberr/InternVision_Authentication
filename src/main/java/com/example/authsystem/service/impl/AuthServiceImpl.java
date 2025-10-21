@@ -87,7 +87,6 @@ public class AuthServiceImpl implements AuthService {
         } catch (AlreadyExistException e) {
             throw new AlreadyExistException(ALREADY_EXCEPTION.getCode(), ALREADY_EXCEPTION.getMessage());
         }
-
     }
 
     @Override
