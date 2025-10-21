@@ -69,7 +69,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     @ResponseStatus(OK)
-    public void logout(@RequestHeader("Authorization") String authHeader) {
+    public void logout(@RequestHeader(value = "Authorization", required = false) String authHeader) {
         authService.logout(authHeader);
     }
 }

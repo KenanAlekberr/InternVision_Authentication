@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.example.authsystem.constant.AppConstants.ACCESS_BLACKLIST_PREFIX;
@@ -173,20 +174,21 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void logout(String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer "))
-            return;
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) return;
 
         String accessToken = authHeader.substring(7);
         String username = jwtUtil.extractUsername(accessToken);
 
-        if (username != null) {
-            cache.delete(REFRESH_KEY_PREFIX + username);
+        if (username == null) return;
 
-            long ttlMillis = computeTokenTtlMillis(accessToken);
+        cache.delete(REFRESH_KEY_PREFIX + username);
 
-            if (ttlMillis > 0)
-                cache.set(ACCESS_BLACKLIST_PREFIX + accessToken, "blacklisted", (int) MILLISECONDS.toMinutes(ttlMillis), MINUTES);
-        }
+        long ttlMillis = computeTokenTtlMillis(accessToken);
+
+        if (ttlMillis > 0)
+            cache.set(ACCESS_BLACKLIST_PREFIX + accessToken, "blacklisted", (int) MILLISECONDS.toMinutes(ttlMillis), MINUTES);
+
+        log.info("User '{}' successfully logged out", username);
     }
 
     @Override
