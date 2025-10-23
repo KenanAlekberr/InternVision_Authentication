@@ -141,7 +141,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler(AuthenticationServiceException.class)
-    @ResponseStatus(BAD_REQUEST)
+    @ResponseStatus(UNAUTHORIZED)
     public ErrorResponse handle(AuthenticationServiceException exception) {
         log.error("AuthenticationServiceException, ", exception);
         return ErrorResponse.builder()

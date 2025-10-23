@@ -36,7 +36,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.example.authsystem.constant.AppConstants.ACCESS_BLACKLIST_PREFIX;
@@ -127,6 +126,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+            
 
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
@@ -146,12 +146,12 @@ public class AuthServiceImpl implements AuthService {
                     .refreshToken(refreshToken)
                     .user(USER_MAPPER.buildUserResponse(userDetails.user()))
                     .build();
-        } catch (BadCredentialsException e) {
-            throw new InvalidCredentialsException(INVALID_CREDENTIALS.getCode(),
-                    INVALID_CREDENTIALS.getMessage());
         } catch (InternalAuthenticationServiceException e) {
             throw new AuthenticationServiceException(AUTHENTICATION_SERVICE_EXCEPTION.getCode(),
                     AUTHENTICATION_SERVICE_EXCEPTION.getMessage());
+        } catch (BadCredentialsException e) {
+            throw new InvalidCredentialsException(INVALID_CREDENTIALS.getCode(),
+                    INVALID_CREDENTIALS.getMessage());
         }
     }
 
@@ -186,7 +186,8 @@ public class AuthServiceImpl implements AuthService {
         long ttlMillis = computeTokenTtlMillis(accessToken);
 
         if (ttlMillis > 0)
-            cache.set(ACCESS_BLACKLIST_PREFIX + accessToken, "blacklisted", (int) MILLISECONDS.toMinutes(ttlMillis), MINUTES);
+            cache.set(ACCESS_BLACKLIST_PREFIX + accessToken, "blacklisted",
+                    (int) MILLISECONDS.toMinutes(ttlMillis), MINUTES);
 
         log.info("User '{}' successfully logged out", username);
     }

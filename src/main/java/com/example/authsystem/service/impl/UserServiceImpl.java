@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private UserEntity fetchUserIfExist(Long id) {
-        return userRepository.findById(id).orElseThrow
-                (() -> new NotFoundException(USER_NOT_FOUND.getCode(), USER_NOT_FOUND.getMessage()));
+        return userRepository.findById(id).orElseThrow(
+                () -> new NotFoundException(USER_NOT_FOUND.getCode(), USER_NOT_FOUND.getMessage()));
     }
 }
